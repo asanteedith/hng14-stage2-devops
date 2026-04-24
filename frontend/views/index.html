@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Job Dashboard</title>
   <style>
     body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 0 20px; }
@@ -45,7 +46,7 @@
         el.id = id;
         document.getElementById('jobs').appendChild(el);
       }
-      el.innerText = `Job ${id.substring(0, 8)}... — ${status}`;
+      el.innerText = `Job ${id ? id.substring(0, 8) : "Unknown"}... - ${status}`;
     }
   </script>
 </body>
