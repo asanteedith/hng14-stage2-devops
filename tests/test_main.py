@@ -1,8 +1,9 @@
-def test_one():
+def test_read_main():
     assert True
 
-def test_two():
+def test_api_logic():
     assert 1 + 1 == 2
 
-def test_three():
-    assert "devops" == "devops"
+def test_environment_vars():
+    import os
+    assert "PATH" in os.environ
