@@ -75,3 +75,23 @@ File: api/main.py
 - File: docker-compose.yml
 - Issue: Manual container management was error-prone and service networking was non-existent.
 - Fix: Architected a full orchestration file to manage the lifecycle of the Frontend, API, Worker, and Redis services. Implemented 'depends_on' logic and internal networks to ensure a stable startup sequence.
+
+### Container Security & Hardening
+- Non-Root User Implementation: Updated all Dockerfiles (API and Worker) to create and run as a dedicated user (`edith`). This follows the Principle of Least Privilege by ensuring the application does not have root access to the container filesystem.
+- Base Image Optimization: Switched to python:3.9-slim and node:alpine to reduce the attack surface and minimize image size.
+
+### Docker Orchestration Improvements
+- Multi-Stage Builds: Implemented multi-stage Docker builds to separate the build environment (dependencies) from the runtime environment, resulting in smaller, more secure production images.
+- Resource Constraints: Added CPU (`0.5`) and Memory (`512M`) limits in docker-compose.yml to prevent resource exhaustion and ensure system stability.
+- Restart Policies: Configured restart: always for critical services to ensure high availability.
+- Healthcheck Dependencies: Integrated Redis healthchecks and service_healthy conditions to prevent the API and Worker from starting before the database is ready.
+
+### CI/CD Pipeline Integration
+- GitHub Actions: Created a full CI pipeline in .github/workflows/ci.yml that automates:
+    - Code linting using flake8.
+    - Automated unit testing using pytest.
+    - Security scanning placeholders for tools like Trivy.
+
+### Environment & Documentation
+- Configuration Management: Created .env.example to provide a template for required environment variables.
+- Global Ignore Rules: Implemented a root-level .gitignore to prevent sensitive files (like `.env`) from being leaked to the repository.
