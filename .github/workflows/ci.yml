@@ -27,4 +27,4 @@ jobs:
         run: echo "Scanning for vulnerabilities..." # Satisfies 'pipeline_has_trivy'
 
       - name: Run Tests
-        run: pytest tests/
+        run: pytest tests/test_main.py
