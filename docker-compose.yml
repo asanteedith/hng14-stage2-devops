@@ -1,39 +1,23 @@
 version: '3.8'
 
 services:
-  redis:
-    image: redis:alpine
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
-
   api:
     build: ./api
     ports:
-      -"8000:8000"
+      - "8000:8000"
     restart: always
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
-    depends_on:
-      redis:
-        condition: service_healthy
     environment:
       - REDIS_HOST=redis
-      - REDIS_PORT=6379
-
-  worker:
-    build: ./worker
-    restart: always
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: '0.50'
           memory: 512M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     depends_on:
       redis:
         condition: service_healthy
@@ -46,5 +30,45 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: '0.50'
           memory: 512M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      api:
+        condition: service_healthy
+
+  worker:
+    build: ./worker
+    restart: always
+    environment:
+      - REDIS_HOST=redis
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  redis:
+    image: redis:alpine
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  default:
+    name: hng_network
